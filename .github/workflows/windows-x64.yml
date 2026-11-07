@@ -51,8 +51,13 @@ jobs:
       - name: Deploy Qt libraries
         shell: pwsh
         run: |
-          $exePath = Get-ChildItem -Path package -Recurse -Filter "pegasus*.exe" | Select-Object -First 1 -ExpandProperty FullName
-          windeployqt --release --qmldir src/frontend $exePath
+          # Buscar el ejecutable generado en cualquier subcarpeta de package y copiar las DLLs de Qt
+          $exe = Get-ChildItem -Path package -Recurse -Filter "pegasus-fe.exe" | Select-Object -First 1
+          if (-not $exe) {
+              $exe = Get-ChildItem -Path package -Recurse -Filter "pegasus.exe" | Select-Object -First 1
+          }
+          Write-Host "Encontrado ejecutable en: $($exe.FullName)"
+          windeployqt --release --qmldir src/frontend $exe.FullName
 
       - name: Create portable ZIP
         shell: pwsh
