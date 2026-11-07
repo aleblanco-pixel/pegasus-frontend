@@ -34,7 +34,7 @@ jobs:
           cmake -S . -B build -G "MinGW Makefiles" `
             -DCMAKE_BUILD_TYPE=Release `
             -DCMAKE_PREFIX_PATH="$env:QT_ROOT_DIR" `
-            -DPEGASUS_USE_SDL2_GAMEPAD=OFF `
+            -DPEGASUS_USE_SDL2_GAMEPAD=ON `
             -DPEGASUS_USE_SDL2_POWER=OFF `
             -DPEGASUS_ENABLE_LTO=OFF
 
