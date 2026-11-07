@@ -51,7 +51,8 @@ jobs:
       - name: Deploy Qt libraries
         shell: pwsh
         run: |
-          windeployqt --release --qmldir src/frontend package/bin/pegasus-fe.exe
+          $exePath = Get-ChildItem -Path package -Recurse -Filter "pegasus*.exe" | Select-Object -First 1 -ExpandProperty FullName
+          windeployqt --release --qmldir src/frontend $exePath
 
       - name: Create portable ZIP
         shell: pwsh
