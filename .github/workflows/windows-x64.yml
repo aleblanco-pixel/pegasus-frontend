@@ -24,7 +24,7 @@ jobs:
           host: windows
           target: desktop
           arch: win64_mingw81
-          modules: qtmultimedia qtsvg qtgamepad qttools
+         
           tools: 'tools_mingw,8.1.0'
 
       - name: Configure Pegasus
