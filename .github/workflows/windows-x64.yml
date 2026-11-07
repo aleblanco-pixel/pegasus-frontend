@@ -1,0 +1,60 @@
+
+name: Build Pegasus Windows x64
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+      - name: Download source code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '5.15.2'
+          host: windows
+          target: desktop
+          arch: win64_mingw81
+          modules: qtmultimedia qtsvg qtgamepad qttools
+          tools: 'tools_mingw,8.1.0'
+
+      - name: Configure Pegasus
+        shell: pwsh
+        run: |
+          cmake -S . -B build -G "MinGW Makefiles" `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_PREFIX_PATH="$env:QT_ROOT_DIR" `
+            -DPEGASUS_USE_SDL2_GAMEPAD=OFF `
+            -DPEGASUS_USE_SDL2_POWER=OFF `
+            -DPEGASUS_ENABLE_LTO=OFF
+
+      - name: Compile Pegasus
+        run: cmake --build build --parallel 2
+
+      - name: Install Pegasus
+        run: cmake --install build --prefix package
+
+      - name: Deploy Qt libraries
+        shell: pwsh
+        run: |
+          windeployqt --release --qmldir src/frontend package/bin/pegasus-fe.exe
+
+      - name: Create portable ZIP
+        shell: pwsh
+        run: |
+          Compress-Archive -Path package/* -DestinationPath Pegasus-Windows-x64.zip
+
+      - name: Upload Windows x64 build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pegasus-Windows-x64
+          path: Pegasus-Windows-x64.zip
